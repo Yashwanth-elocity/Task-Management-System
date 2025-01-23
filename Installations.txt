@@ -1,3 +1,4 @@
 express - npm i express  (To set up the express server)
 nodemon - npm i -D nodemon (For Module reload and autoupdate ) 
 dotenv - npm i dotenv (For loading the sensitive data into the system environmental variables)
+mongoose ODM (Object Data Modeling) - npm i mongoose
