@@ -3,6 +3,7 @@ nodemon - npm i -D nodemon (For Module reload and autoupdate )
 dotenv - npm i dotenv (For loading the sensitive data into the system environmental variables)
 mongoose ODM (Object Data Modeling) - npm i mongoose
 jsonwebtoken (jwt) - for providing authentication (npm i jsonwebtoken) 
+cookie-parser (middleware) - to allow parsing of the cookies for each request sent to server after login , with this middleware you get access to the client side cookie through req.cookie.keyname
 
 
 - User Registeration (POST /api/register)
@@ -23,6 +24,9 @@ bcrypt - To hash password while storing into users collectins in mongodb
   - Once a user Login a cookie is sent as response which contains a JWT Token in it. This token allows us to perform "Token based authentication"
   - To logout a user all we do is expire the token and remove the cookie from that user 
   - This logouts the user from the application
+
+- createTask (POST /api/tasks)
+  
 
 environmental variables : 
 - Create a .env file at the root directory and include as mentioned in .env.sample file 

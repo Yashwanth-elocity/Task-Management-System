@@ -2,6 +2,10 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+
+const cookieparser = require("cookie-parser");
+app.use(cookieparser());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -12,7 +16,10 @@ const Task = require("./models/task.model");
 
 const authRouter = require("./routes/auth.route");
 
+const userRouter = require("./routes/user.route");
+
 app.use("/", authRouter);
+app.use("/", userRouter);
 
 connectDb()
   .then(() => {
