@@ -1,11 +1,37 @@
 express - npm i express  (To set up the express server)
 nodemon - npm i -D nodemon (For Module reload and autoupdate ) 
 dotenv - npm i dotenv (For loading the sensitive data into the system environmental variables)
-mongoose ODM (Object Data Modeling) - npm i mongoose 
+mongoose ODM (Object Data Modeling) - npm i mongoose
+jsonwebtoken (jwt) - for providing authentication (npm i jsonwebtoken) 
 
 
-- User Registeration payload => { firstName , lastName , userName , password}
+- User Registeration (POST /api/register)
+ payload => { firstName , lastName , userName , password}
 - Off which username and password are required fields and firstName and lastName are optional to provide 
 - the registered users get stored as a single document in Users Collection 
 
 bcrypt - To hash password while storing into users collectins in mongodb
+
+- userLogin  (POST /api/login)
+  - payload {username , password } 
+  -if username exists and password is correct from the stored users data in database then 
+  -we send a jwt token as response through cookies 
+  -Every request to server will now include the cookie that contains jwt token.
+  (Should Try: Didn't provide expiry to the cookie so if token is valid as well cookie gets deleted once the browser is closed (Ending the session ))
+
+- userLogout (POST /api/logout)
+  - Once a user Login a cookie is sent as response which contains a JWT Token in it. This token allows us to perform "Token based authentication"
+  - To logout a user all we do is expire the token and remove the cookie from that user 
+  - This logouts the user from the application
+
+environmental variables : 
+- Create a .env file at the root directory and include as mentioned in .env.sample file 
+- PORT => Specifies the port on which the server runs 
+- DB_URL => MongoDB database URL 
+- JWT_SECRET_KEY => sensitive data, can be any string 
+
+Setup Instructions
+1) npm i = to install all the packages needed mentioned in package.json 
+2) npm start - For production (To start the server)
+3) npm run dev - For development (To start the server)
+4) npm run watch - Also for development but without nodemon (To start the server)

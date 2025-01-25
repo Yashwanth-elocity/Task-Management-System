@@ -6,8 +6,7 @@ const { checkSignUpData } = require("../utils/validations");
 const bcrypt = require("bcrypt");
 const checkvalidUser = require("../middlewares/checkvalidUser");
 
-authRouter.post("/register", async (req, res) => {
-  res;
+authRouter.post("/api/register", async (req, res) => {
   try {
     // validating signup data from payload
     checkSignUpData(req);
@@ -16,7 +15,6 @@ authRouter.post("/register", async (req, res) => {
 
     const request = req.body;
     const userExists = await User.findOne({ username: request.username });
-    4;
     if (userExists) {
       return res.status(400).json({ error: "Username already exists." });
     }
@@ -44,7 +42,7 @@ authRouter.post("/register", async (req, res) => {
   }
 });
 
-authRouter.post("/login", checkvalidUser, (req, res) => {
+authRouter.post("/api/login", checkvalidUser, (req, res) => {
   try {
     res.send({ message: "login Successful" });
   } catch (error) {
@@ -53,4 +51,18 @@ authRouter.post("/login", checkvalidUser, (req, res) => {
       .json({ message: "unexpected error occured", error: error.message });
   }
 });
+
+authRouter.post("/api/logout", (req, res) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+    });
+    res.status(200).json({ message: "Logged Out Sucessfully" });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "unexpected error occured", error: error.message });
+  }
+});
+
 module.exports = authRouter;
