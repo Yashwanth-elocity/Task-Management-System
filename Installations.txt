@@ -1,4 +1,11 @@
 express - npm i express  (To set up the express server)
 nodemon - npm i -D nodemon (For Module reload and autoupdate ) 
 dotenv - npm i dotenv (For loading the sensitive data into the system environmental variables)
-mongoose ODM (Object Data Modeling) - npm i mongoose ll
+mongoose ODM (Object Data Modeling) - npm i mongoose 
+
+
+- User Registeration payload => { firstName , lastName , userName , password}
+- Off which username and password are required fields and firstName and lastName are optional to provide 
+- the registered users get stored as a single document in Users Collection 
+
+bcrypt - To hash password while storing into users collectins in mongodb

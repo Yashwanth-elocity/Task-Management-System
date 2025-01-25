@@ -2,15 +2,17 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 const connectDb = require("./db/db.connect");
 
 const Task = require("./models/task.model");
 
-app.get("/", (req, res, next) => {
-  res.send("hello world");
-});
+const authRouter = require("./routes/auth.route");
+
+app.use("/", authRouter);
 
 connectDb()
   .then(() => {
