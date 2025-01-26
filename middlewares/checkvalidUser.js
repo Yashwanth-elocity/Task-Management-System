@@ -39,9 +39,13 @@ const checkvalidUser = async (req, res, next) => {
   console.log(token);
 
   // send that in response through a cookie to the user allowing him to login
+
+  const expiryDate = new Date();
+  expiryDate.setHours(expiryDate.getHours() + 1);
   res.cookie("token", token, {
     httpOnly: true,
     secure: true,
+    expires: expiryDate,
   });
 
   // also provide an expiry time for the token

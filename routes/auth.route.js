@@ -33,7 +33,7 @@ authRouter.post("/api/register", async (req, res) => {
     console.log(user);
     const savedUser = await user.save();
     console.log(savedUser);
-    res.json({ data: user, message: "user registered successfully" });
+    res.json({ data: savedUser, message: "user registered successfully" });
   } catch (error) {
     res.json({
       message: "Unexpected error occured",

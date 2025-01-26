@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const signUpSchema = Joi.object({
-  username: Joi.string().min(3).max(30).required(),
+  username: Joi.string().trim().min(3).max(30).required(),
   password: Joi.string()
     .pattern(
       new RegExp(
@@ -15,8 +15,8 @@ const signUpSchema = Joi.object({
       "string.empty": "Password cannot be empty.",
       "any.required": "Password is required.",
     }),
-  firstName: Joi.string().optional().min(3).max(10),
-  lastName: Joi.string().optional().min(1).max(30),
+  firstName: Joi.string().trim().optional().min(3).max(10),
+  lastName: Joi.string().trim().optional().min(1).max(30),
 });
 
 const checkSignUpData = (req) => {
@@ -34,4 +34,62 @@ const checkSignUpData = (req) => {
   }
 };
 
-module.exports = { checkSignUpData };
+const StatusEnum = ["pending", "In-progress", "completed"];
+
+const taskDataSchema = Joi.object({
+  title: Joi.string().required().trim().min(3).max(30).messages({
+    "string.empty": "Title is required.",
+    "string.min": "Title must be at least 3 characters long.",
+    "string.max": "Title cannot exceed 30 characters.",
+  }),
+  description: Joi.string().optional().trim().min(3).messages({
+    "string.min": "Description must be at least 3 characters long.",
+  }),
+  status: Joi.string()
+    .optional()
+    .trim()
+    .valid(...StatusEnum)
+    .insensitive()
+    .messages({
+      "any.only":
+        "Status must be one of PENDING, APPROVED, or REJECTED (case-insensitive).",
+    }),
+  dueDate: Joi.string()
+    .optional()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/) // Regex to match yyyy-mm-dd format
+    .custom((value, helpers) => {
+      // Check if the date is a valid date and in the future
+      const date = new Date(value);
+      if (isNaN(date)) {
+        return helpers.message(
+          '"dueDate" must be a valid date in yyyy-mm-dd format'
+        );
+      }
+      if (date <= new Date()) {
+        return helpers.message(
+          '"dueDate" must be a date in the future (yyyy-mm-dd format)'
+        );
+      }
+      return value;
+    })
+    .message({
+      "string.base": '"dueDate" must be a string',
+      "string.pattern.base": '"dueDate" must be in the format yyyy-mm-dd',
+    }),
+});
+
+const checkTaskData = (req) => {
+  const options = { abortEarly: false };
+  const response = taskDataSchema.validate(req.body, options);
+  console.log(response);
+  if (response.error !== undefined) {
+    const errorMessages = response.error.details.map(
+      (detail) => detail.message
+    );
+    console.log(errorMessages);
+    throw new Error(errorMessages.join("` "));
+  }
+};
+
+module.exports = { checkSignUpData, checkTaskData };

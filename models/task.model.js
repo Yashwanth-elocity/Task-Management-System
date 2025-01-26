@@ -4,14 +4,17 @@ const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
+      trim: true,
       required: true,
     },
     description: {
       type: String,
+      trim: true,
       minLength: 3,
     },
     status: {
       type: String,
+      trim: true,
       enum: {
         values: ["pending", "in-progress", "completed"],
         message: `{Value not supported}`,
