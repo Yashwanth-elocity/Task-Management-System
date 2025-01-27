@@ -15,8 +15,8 @@ userRouter.post("/api/tasks", userAuthenticated, async (req, res) => {
     const TaskPayload = {
       title,
       ...(request?.description && { description: request.description }),
-      ...(request?.status && { description: request.status }),
-      ...(request?.dueDate && { description: request.dueDate }),
+      ...(request?.status && { status: request.status }),
+      ...(request?.dueDate && { dueDate: request.dueDate }),
     };
 
     const task = new Task(TaskPayload);
