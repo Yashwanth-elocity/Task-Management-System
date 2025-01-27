@@ -53,43 +53,36 @@ userRouter.get("/api/tasks", userAuthenticated, async (req, res) => {
   try {
     const queryFilters = req.query;
     console.log(queryFilters);
-    if (Object.keys(queryFilters).length === 0) {
-      const allTasks = await Task.find({});
-      console.log(allTasks);
-      return res.json({ message: "All Tasks Fetched", data: allTasks });
-    }
-    const allowedQueries = ["status", "dueDate"];
-    const queryObject = req.query;
 
-    const queryKeys = Object.keys(queryObject);
+    const allowedQueries = ["status", "dueDate", "sortBy", "order"];
+    const queryKeys = Object.keys(queryFilters);
+
     const isValid =
       queryKeys.every((key) => allowedQueries.includes(key)) &&
       queryKeys.length <= allowedQueries.length;
 
     if (!isValid) {
-      throw new Error("QueryParameters not supported");
+      throw new Error("Query parameters not supported");
     }
-    const { status, dueDate } = queryFilters;
 
-    // if (status) {
-    //   const filteredTasks = await Task.find({ status: status });
-    //   console.log(filteredTasks);
-    //   return res.json({ message: "All Tasks fetched", data: filteredTasks });
-    // }
-    // if (dueDate) {
-    //   const filteredTasks = await Task.find({ dueDate: dueDate });
-    //   console.log(filteredTasks);
-    //   return res.json({ message: "All Tasks fetched", data: filteredTasks });
-    // }
-    if (status || dueDate) {
-      const filteredTasks = await Task.find({
-        ...(status && { status: status }),
-        ...(dueDate && { dueDate: dueDate }),
-      });
-      console.log(filteredTasks);
-      return res.json({ message: "All Tasks fetched", data: filteredTasks });
-    }
-    res.json({ message: "ok" });
+    const {
+      status,
+      dueDate,
+      sortBy = "createdAt",
+      order = "asc",
+    } = queryFilters;
+
+    const filter = {
+      ...(status && { status }),
+      ...(dueDate && { dueDate }),
+    };
+
+    const sortOrder = order.toLowerCase() === "desc" ? -1 : 1;
+
+    const tasks = await Task.find(filter).sort({ [sortBy]: sortOrder });
+
+    console.log(tasks);
+    res.json({ message: "All Tasks fetched", data: tasks });
   } catch (error) {
     res
       .status(400)
