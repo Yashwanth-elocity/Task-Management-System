@@ -34,7 +34,7 @@ const checkSignUpData = (req) => {
   }
 };
 
-const StatusEnum = ["pending", "In-progress", "completed"];
+const StatusEnum = ["pending", "in-progress", "completed"];
 
 const taskDataSchema = Joi.object({
   title: Joi.string().required().trim().min(3).max(30).messages({
@@ -52,7 +52,7 @@ const taskDataSchema = Joi.object({
     .insensitive()
     .messages({
       "any.only":
-        "Status must be one of PENDING, APPROVED, or REJECTED (case-insensitive).",
+        "Status must be one of PENDING, In-Progress, or completed (case-insensitive).",
     }),
   dueDate: Joi.string()
     .optional()

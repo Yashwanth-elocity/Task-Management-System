@@ -68,4 +68,47 @@ userRouter.delete("/api/tasks/:id", userAuthenticated, async (req, res) => {
   }
 });
 
+userRouter.put("/api/tasks/:id", userAuthenticated, async (req, res) => {
+  try {
+    // Check task data
+    checkTaskData(req);
+
+    const { id } = req.params;
+
+    // check if Task Exists or not
+    const taskExists = await Task.findById({ _id: id });
+    if (!taskExists) {
+      return res.status(404).json({ message: "Task Not found to Update" });
+    }
+
+    // if exists update the task
+    const { title, description, status, dueDate } = req.body;
+
+    const newTask = {
+      title,
+      ...(description && { description: req.body.description }),
+      ...(status && { status: req.body.status }),
+      ...(dueDate && { dueDate: req.body.dueDate }),
+    };
+
+    console.log(newTask);
+
+    const updatedTask = await Task.findByIdAndUpdate({ _id: id }, newTask, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+
+    res.json({ message: "Task Updated Successfully", data: updatedTask });
+  } catch (error) {
+    if (typeof error !== String) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(400).json({
+        message: "Unexpected error occured",
+        errors: { list: error.message.split("`") },
+      });
+    }
+  }
+});
+
 module.exports = userRouter;
