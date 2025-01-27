@@ -49,6 +49,54 @@ userRouter.get("/api/tasks/:id", userAuthenticated, async (req, res) => {
   }
 });
 
+userRouter.get("/api/tasks", userAuthenticated, async (req, res) => {
+  try {
+    const queryFilters = req.query;
+    console.log(queryFilters);
+    if (Object.keys(queryFilters).length === 0) {
+      const allTasks = await Task.find({});
+      console.log(allTasks);
+      return res.json({ message: "All Tasks Fetched", data: allTasks });
+    }
+    const allowedQueries = ["status", "dueDate"];
+    const queryObject = req.query;
+
+    const queryKeys = Object.keys(queryObject);
+    const isValid =
+      queryKeys.every((key) => allowedQueries.includes(key)) &&
+      queryKeys.length <= allowedQueries.length;
+
+    if (!isValid) {
+      throw new Error("QueryParameters not supported");
+    }
+    const { status, dueDate } = queryFilters;
+
+    // if (status) {
+    //   const filteredTasks = await Task.find({ status: status });
+    //   console.log(filteredTasks);
+    //   return res.json({ message: "All Tasks fetched", data: filteredTasks });
+    // }
+    // if (dueDate) {
+    //   const filteredTasks = await Task.find({ dueDate: dueDate });
+    //   console.log(filteredTasks);
+    //   return res.json({ message: "All Tasks fetched", data: filteredTasks });
+    // }
+    if (status || dueDate) {
+      const filteredTasks = await Task.find({
+        ...(status && { status: status }),
+        ...(dueDate && { dueDate: dueDate }),
+      });
+      console.log(filteredTasks);
+      return res.json({ message: "All Tasks fetched", data: filteredTasks });
+    }
+    res.json({ message: "ok" });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Unexpected error occurred", error: error.message });
+  }
+});
+
 userRouter.delete("/api/tasks/:id", userAuthenticated, async (req, res) => {
   try {
     const { id } = req.params;
