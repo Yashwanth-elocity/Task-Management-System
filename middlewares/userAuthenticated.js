@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
+const redisClient = require("../redis/redisConfig");
 
 const userAuthenticated = async (req, res, next) => {
   try {
@@ -18,10 +19,20 @@ const userAuthenticated = async (req, res, next) => {
 
     const { _id } = tokenData;
 
+    const cachedUser = await redisClient.get(`user:${_id}`);
+    console.log(cachedUser);
+
+    if (cachedUser) {
+      console.log("🚀 Serving User from Cache");
+      req.user = JSON.parse(cachedUser);
+      return next();
+    }
+
     const userExists = await User.findById(_id);
     console.log(userExists);
 
     if (!userExists) {
+      await redisClient.del(`user:${_id}`);
       return res
         .status(401)
         .json({ message: "Unauthorized Access Please Login!!" });

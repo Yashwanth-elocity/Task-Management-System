@@ -5,6 +5,7 @@ const User = require("../models/user.model");
 const { checkSignUpData } = require("../utils/validations");
 const bcrypt = require("bcrypt");
 const checkvalidUser = require("../middlewares/checkvalidUser");
+const redisClient = require("../redis/redisConfig");
 
 authRouter.post("/api/register", async (req, res) => {
   try {
@@ -33,6 +34,10 @@ authRouter.post("/api/register", async (req, res) => {
     console.log(user);
     const savedUser = await user.save();
     console.log(savedUser);
+
+    // After saving user to MongoDB, cache the user data in Redis for future use
+    await redisClient.set(`user:${savedUser._id}`, JSON.stringify(savedUser)); // Cache for 1 hour
+
     res.json({ data: savedUser, message: "user registered successfully" });
   } catch (error) {
     res.json({
