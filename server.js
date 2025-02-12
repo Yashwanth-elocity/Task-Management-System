@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { consumeTasks } = require("./kafka/KafkaConsumer");
 
 const express = require("express");
 const app = express();
@@ -24,8 +25,10 @@ app.use("/", userRouter);
 connectDb()
   .then(() => {
     console.log(`Database Connected successfully`);
-    app.listen(PORT, () => {
+    app.listen(PORT, async () => {
       console.log(`Server is running on port ${PORT}`);
+      // Start Kafka consumer
+      await consumeTasks();
     });
   })
   .catch((error) => {

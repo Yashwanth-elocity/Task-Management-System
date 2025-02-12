@@ -5,25 +5,30 @@ const userAuthenticated = require("../middlewares/userAuthenticated");
 const { checkTaskData } = require("../utils/validations");
 const mongoose = require("mongoose");
 const redisClient = require("../redis/redisConfig");
+const { sendTaskEvent } = require("../kafka/KafkaProducer");
 // console.log(userAuthenticated);
 
 userRouter.post("/api/tasks", userAuthenticated, async (req, res) => {
   try {
     checkTaskData(req);
     const { title, description, status, dueDate } = req.body;
+    await sendTaskEvent("task-added", req.body);
 
-    const request = req.body;
-    const TaskPayload = {
-      title,
-      ...(request?.description && { description: request.description }),
-      ...(request?.status && { status: request.status }),
-      ...(request?.dueDate && { dueDate: request.dueDate }),
-    };
+    // const request = req.body;
+    // const TaskPayload = {
+    //   title,
+    //   ...(request?.description && { description: request.description }),
+    //   ...(request?.status && { status: request.status }),
+    //   ...(request?.dueDate && { dueDate: request.dueDate }),
+    // };
 
-    const task = new Task(TaskPayload);
-    const savedTask = await task.save();
-    console.log(savedTask);
-    res.json({ data: savedTask, message: "Task added Successfully" });
+    // const task = new Task(TaskPayload);
+    // const savedTask = await task.save();
+    // console.log(savedTask);
+    res.json({
+      // data: savedTask,
+      message: "Task added Successfully and will be processed",
+    });
   } catch (error) {
     res.status(400).json({
       message: "Unexpected error occured",
